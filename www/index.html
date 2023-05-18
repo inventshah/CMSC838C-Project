@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Data Driven BRDF Editing</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta charset="UTF-8" />
+		<link href="assets/out.png" rel="icon" type="image/png" />
+		<script
+			id="MathJax-script"
+			async
+			src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
+		></script>
+		<link rel="stylesheet" href="https://latex.now.sh/style.css" />
+		<style>
+			.justify {
+				text-align: justify !important;
+				text-justify: inter-word;
+			}
+			cite {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>Data Driven BRDF Editing</h1>
+		<p class="author">
+			Sachin Shah and Sakshum Kulshrestha<br />
+			UMD CMSC838C<br />
+			Spring 2023
+		</p>
+		<main>
+			<article>
+				<h2>BRDF Editing Tool Demos</h2>
+				<ol>
+					<li>
+						<a href="demo1.html" target="_blank">
+							MERL only trained VAE with 8 latent values</a
+						>
+					</li>
+					<li>
+						<a href="demo2.html" target="_blank">
+							MERL + RGL trained VAE with 12 latent values</a
+						>
+					</li>
+					<li>
+						<a href="demo3.html" target="_blank">
+							Demo 1 with expanded P9 and P10 latent space
+						</a>
+					</li>
+					<li>
+						<a href="demo4.html" target="_blank">
+							Grayscale MERL + RGL trained VAE with 3 latent
+							values per color
+						</a>
+					</li>
+					<li>
+						<a href="demo5.html" target="_blank">
+							Same network from 4, used wheel for color changes
+						</a>
+					</li>
+				</ol>
+				<h2>Motivation</h2>
+				<p class="justify">
+					Designing 3D worlds is challenging for many and remains time
+					consuming to perfect. One limiting factor is constructing
+					realistic materials to give the world life. Existing
+					material generation tools are limited in expressiveness.
+					Measured bidirectional reflectance distribution functions
+					(BRDFs) offer a unique mechanism for capturing and rendering
+					real world materials. These datasets are expensive to
+					collect and use too much memory to be practical for large
+					scale computer graphics applications, such as full 3D VR
+					environments. Current solutions leverage deep learning to
+					compress these materials or rly on limited analytical
+					solutions. Although these approaches improve usefulness in
+					rendering pipelines, they fail to give artists deep control
+					over the material appearance. This work presents a machine
+					learning approach that generates a parameter space of the
+					measured BRDF data to enable material editing.
+				</p>
+				<h2>Datasets</h2>
+				<h3>
+					Mitsubishi Electric Research Laboratories (MERL) BRDF
+					Dataset
+					<cite>
+						Wojciech Matusik, Hanspeter Pfister, Matt Brand and
+						Leonard McMillan. “A Data-Driven Reflectance Model”. ACM
+						Transactions on Graphics 22, 3(2003), 759-769.
+					</cite>
+				</h3>
+				<p class="justify">
+					Their acquisition system requires a spherically homogenous
+					sample of the material. The system is placed in a completely
+					isolated room painted in black matte. Then, a high dynamic
+					range RGB image is taken at many camera viewing angles and
+					light incident angles according to the sampling scheme. They
+					choose Rusinkiewicz's coordinate system and discretize
+					\(\theta_h, \theta_d\) into 90 bins, and \(\phi_d\) into 180
+					bins. In total, each isotropic material is approximately
+					35MB and takes 4 hours to collect.
+				</p>
+				<figure>
+					<img
+						src="assets/imgs/merl-brdfs.png"
+						width="500"
+						alt="examples of MERL BRDFs"
+						loading="lazy"
+					/>
+					<figcaption>
+						Pictures of 100 materials in the MERL BRDF dataset.
+					</figcaption>
+				</figure>
+				<h3>
+					EPFL's Realistic Graphics Lab Material Database
+					<cite>
+						An Adaptive Parameterization for Efficient Material
+						Acquisition and Rendering Jonathan Dupuy (Unity
+						Technologies) and Wenzel Jakob (EPFL) In ACM
+						Transactions on Graphics (Proceedings of SIGGRAPH Asia
+						2018)
+					</cite>
+				</h3>
+				<p class="justify">
+					This work introduces an adaptive parameterization to lower
+					the required samples and improve resolution for specular
+					materials. Each isotropic material on average takes under
+					1MB to store.
+				</p>
+				<figure>
+					<img
+						src="assets/imgs/rgl-brdfs.png"
+						width="500"
+						alt="examples of RGL BRDFs"
+						loading="lazy"
+					/>
+					<figcaption>
+						Renderings of 36 materials in the RGL material database.
+					</figcaption>
+				</figure>
+				<!-- <h3>
+					Columbia-Utrecht Reflectance and Texture Database (CuRRET)
+					<cite>
+						"Reflectance and Texture of Real World Surfaces," K.J.
+						Dana, B. Van-Ginneken, S.K. Nayar and J.J. Koenderink,
+						ACM Transactions on Graphics (TOG), Vol. 18, No. 1, pp.
+						1-34, Jan. 1999
+					</cite>
+				</h3>
+				<p class="justify">
+					This work sampled materials at 205 viewing and illumination
+					directions. Although each material is quite small at under
+					2KB, the resolution is suffers greatly especially compared
+					to MERL and RGL datasets.
+				</p>
+				<figure>
+					<img
+						src="assets/imgs/cave-brdfs.png"
+						width="500"
+						alt="examples of Columbia BRDFs"
+						loading="lazy"
+					/>
+					<figcaption>
+						Renderings of materials in the CuRRET BRDF database.
+					</figcaption>
+				</figure> -->
+				<h2>Methods</h2>
+				<p class="justify">
+					Trained a dense auto-encoder to learn a latent space for
+					materials. KL divergence is used to disentangle the latent
+					space. See our writeup for a more detailed explaination and
+					results.
+				</p>
+				<h2>Course Artifacts</h2>
+				<ul>
+					<li>
+						<a
+							href="https://docs.google.com/presentation/d/1rQEx5dBw5Fs0XXRTUP1E5fd61LDGgdqoaTToI0ipHQI/edit?usp=sharing"
+						>
+							Proposal Presentation
+						</a>
+					</li>
+					<li>
+						<a
+							href="https://docs.google.com/presentation/d/1TkbwRrjfz3duJ-neaumaIO3a_WXpTro_vE5bjj723-k/edit?usp=sharing"
+						>
+							Progress Presentation
+						</a>
+					</li>
+					<li>
+						<a
+							href="https://docs.google.com/presentation/d/1LiAE0R-umvITCovlbn9f7ActYspRpkXjHVpdDmuPHnk/edit?usp=sharing"
+						>
+							Final Presentation
+						</a>
+					</li>
+					<li>
+						<a href="assets/report.pdf"> Final Writeup </a>
+					</li>
+				</ul>
+			</article>
+		</main>
+		<div>
+			<h2>References</h2>
+			<ol id="cites"></ol>
+		</div>
+	</body>
+
+	<script>
+		const cites = document.getElementById("cites");
+		let idx = 0;
+		for (const elm of document.getElementsByTagName("cite")) {
+			const li = document.createElement("li");
+			li.innerText = elm.innerText.replace("\n", " ");
+			cites.appendChild(li);
+			elm.style.display = "inline";
+			elm.style.fontStyle = "normal";
+			elm.innerText = `[${++idx}]`;
+		}
+	</script>
+</html>
